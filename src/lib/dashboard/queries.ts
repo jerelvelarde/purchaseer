@@ -131,7 +131,7 @@ export async function resolveCurrentWorkspace(): Promise<
 
 /**
  * Project-level access: Owner OR the assigned PM of that project. We treat
- * `projects.pm_user_id` as the assignment column (per PLAN.md). If the
+ * `projects.assigned_pm_id` as the assignment column (per PLAN.md). If the
  * column shape from #3 differs, this is the single place to update.
  */
 export async function userCanAccessProject(
@@ -146,11 +146,11 @@ export async function userCanAccessProject(
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("projects")
-    .select("id, pm_user_id")
+    .select("id, assigned_pm_id")
     .eq("workspace_id", workspaceId)
     .eq("id", projectId)
     .maybeSingle();
 
   if (error || !data) return false;
-  return (data as { pm_user_id?: string | null }).pm_user_id === userId;
+  return (data as { assigned_pm_id?: string | null }).assigned_pm_id === userId;
 }
