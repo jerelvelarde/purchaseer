@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
-import { centavosToPeso, lineTotalCentavos, sumCentavos } from "@/lib/po/money";
+import { formatPeso, lineTotalCentavos, sumCentavos } from "@/lib/money";
 import { ALLOWED_ATTACHMENT_TYPES } from "@/lib/po/types";
 
 type LineRow = { description: string; qty: string; unit_price_pesos: string };
@@ -184,7 +184,7 @@ function NewPOPage() {
           <button type="button" onClick={addLine} className="mt-2 text-sm underline">
             + add line
           </button>
-          <p className="mt-2 text-sm">Total: {centavosToPeso(totalCentavos)}</p>
+          <p className="mt-2 text-sm">Total: {formatPeso(totalCentavos)}</p>
         </div>
 
         {err && <p className="text-sm text-red-600">{err}</p>}

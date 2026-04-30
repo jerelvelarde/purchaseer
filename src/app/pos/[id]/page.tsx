@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
-import { centavosToPeso } from "@/lib/po/money";
+import { formatPeso } from "@/lib/money";
 import { ALLOWED_ATTACHMENT_TYPES, type AllowedAttachmentType } from "@/lib/po/types";
 
 type PO = {
@@ -137,7 +137,7 @@ export default function POPage() {
           <span className="font-medium">Supplier:</span> {po.supplier_name}
         </p>
         <p>
-          <span className="font-medium">Total:</span> {centavosToPeso(po.total_centavos)}
+          <span className="font-medium">Total:</span> {formatPeso(po.total_centavos)}
         </p>
         {po.note && <p className="mt-2 text-sm">{po.note}</p>}
       </section>
@@ -148,9 +148,9 @@ export default function POPage() {
           {items.map((li) => (
             <li key={li.id} className="flex justify-between">
               <span>
-                {li.description} ({li.qty} × {centavosToPeso(li.unit_price_centavos)})
+                {li.description} ({li.qty} × {formatPeso(li.unit_price_centavos)})
               </span>
-              <span>{centavosToPeso(li.line_total_centavos)}</span>
+              <span>{formatPeso(li.line_total_centavos)}</span>
             </li>
           ))}
         </ul>

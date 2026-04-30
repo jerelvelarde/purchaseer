@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computePercentUsed, centavosToPeso } from "@/lib/dashboard/money";
+import { computePercentUsed } from "@/lib/dashboard/percent";
 
 describe("computePercentUsed", () => {
   it("returns 0 when budget is 0 (not NaN/Infinity)", () => {
@@ -24,20 +24,5 @@ describe("computePercentUsed", () => {
 
   it("can exceed 100 (over budget)", () => {
     expect(computePercentUsed(15000, 10000)).toBe(150);
-  });
-});
-
-describe("centavosToPeso", () => {
-  it("formats centavos as PHP currency", () => {
-    const s = centavosToPeso(123456);
-    // Locale formatting may differ across environments; just assert it
-    // contains the numeric chunk and a currency marker.
-    expect(s).toMatch(/1,234\.56/);
-  });
-
-  it("treats null/undefined/NaN as 0", () => {
-    expect(centavosToPeso(null)).toMatch(/0\.00/);
-    expect(centavosToPeso(undefined)).toMatch(/0\.00/);
-    expect(centavosToPeso(NaN)).toMatch(/0\.00/);
   });
 });

@@ -4,7 +4,7 @@ import { createSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 import { requireRole } from "@/lib/auth/guards";
 import { sendEmail } from "@/lib/email/resend";
 import { buildApprovalEmail } from "@/lib/email/po-decision";
-import { transitionApproval, type ApprovalAction } from "@/lib/po/approval-machine";
+import { transitionApproval, type ApprovalAction } from "@/lib/po/state-machine";
 import {
   notificationPayloadSchema,
   type NotificationKind,
