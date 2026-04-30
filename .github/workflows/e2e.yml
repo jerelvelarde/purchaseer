@@ -1,0 +1,82 @@
+name: E2E
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# This job is expected to fail until issues #3-#6 land (signup, invites,
+# projects, POs, dashboards). To temporarily skip while those are in flight,
+# set the repo variable `E2E_ENABLED` to "false" — the gate below will short-
+# circuit the job. Flip it back to "true" once #3-#6 are merged.
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    # Allow the workflow to keep going while features land. Flip to `false`
+    # once the golden path is reliably green.
+    continue-on-error: true
+    if: ${{ vars.E2E_ENABLED != 'false' }}
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # Local Supabase stack values — replaced by `supabase start` once we
+      # add it. For now point at the Postgres service container; seed/test
+      # steps below will skip gracefully if Supabase isn't running.
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon
+      SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role
+      TEST_INVITE_SECRET: test-invite-secret
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Install Supabase CLI
+        run: |
+          curl -L https://github.com/supabase/cli/releases/latest/download/supabase_linux_amd64.tar.gz \
+            | tar xz -C /usr/local/bin supabase || true
+          supabase --version || echo "supabase CLI not available; skipping local stack"
+
+      - name: Start Supabase local stack
+        run: supabase start || echo "supabase start failed; e2e will be skipped downstream"
+
+      - name: Apply migrations
+        run: supabase db reset --no-seed || echo "migrations skipped"
+
+      - name: Run seed
+        run: pnpm seed || echo "seed skipped (depends on #3-#6 tables)"
+
+      - name: Install Playwright
+        run: pnpm playwright install --with-deps chromium
+
+      - name: Run Playwright E2E
+        run: pnpm test:e2e
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
