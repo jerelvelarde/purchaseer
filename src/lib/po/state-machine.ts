@@ -35,3 +35,19 @@ export function transition(
 export function canEdit(status: POStatus): boolean {
   return status === "draft";
 }
+
+export type ApprovalAction = "approve" | "reject";
+
+/**
+ * Throwing convenience wrapper for the pending → approved/rejected slice
+ * used by the approval routes. Use `transition()` directly when you want
+ * the discriminated-union result instead.
+ */
+export function transitionApproval(
+  from: POStatus,
+  action: ApprovalAction,
+): "approved" | "rejected" {
+  const result = transition(from, action);
+  if (!result.ok) throw new Error(result.error);
+  return result.to as "approved" | "rejected";
+}

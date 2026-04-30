@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePolling } from "@/lib/use-polling";
-import { centavosToPeso, computePercentUsed } from "@/lib/dashboard/money";
+import { formatPeso } from "@/lib/money";
+import { computePercentUsed } from "@/lib/dashboard/percent";
 import type { ProjectRow } from "@/lib/dashboard/queries";
 
 async function fetchCompany(): Promise<{ projects: ProjectRow[] }> {
@@ -57,9 +58,9 @@ function ProjectCard({ p }: { p: ProjectRow }) {
       </div>
       <dl className="mt-3 grid grid-cols-2 gap-y-1 text-sm">
         <dt className="text-slate-500">Budget</dt>
-        <dd className="text-right text-slate-900">{centavosToPeso(p.budget_centavos)}</dd>
+        <dd className="text-right text-slate-900">{formatPeso(p.budget_centavos)}</dd>
         <dt className="text-slate-500">Spend</dt>
-        <dd className="text-right text-slate-900">{centavosToPeso(p.spend_centavos)}</dd>
+        <dd className="text-right text-slate-900">{formatPeso(p.spend_centavos)}</dd>
         <dt className="text-slate-500">% used</dt>
         <dd className={`text-right font-medium ${over ? "text-red-600" : "text-slate-900"}`}>
           {pct.toFixed(1)}%

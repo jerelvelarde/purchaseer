@@ -59,3 +59,45 @@ export function pesoToCentavos(input: string): bigint {
   const total = BigInt(whole) * CENTAVOS_PER_PESO + BigInt(frac);
   return sign === "-" ? -total : total;
 }
+
+/**
+ * Format centavos as a localized peso currency string with the ₱ symbol.
+ * Accepts both `number` and `bigint` so it can sit at the boundary between
+ * the storage layer (bigint) and JS code paths that use number.
+ *
+ *   formatPeso(0)          -> "₱0.00"
+ *   formatPeso(150)        -> "₱1.50"
+ *   formatPeso(123450n)    -> "₱1,234.50"
+ *   formatPeso(-1)         -> "-₱0.01"
+ */
+export function formatPeso(centavos: number | bigint | null | undefined): string {
+  const n =
+    typeof centavos === "bigint"
+      ? Number(centavos)
+      : typeof centavos === "number" && Number.isFinite(centavos)
+        ? centavos
+        : 0;
+  return new Intl.NumberFormat("en-PH", {
+    style: "currency",
+    currency: "PHP",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(n / 100);
+}
+
+/**
+ * Compute a line total in centavos. `qty` may have decimals; the result is
+ * rounded to the nearest centavo. `unitPriceCentavos` must be a non-negative
+ * integer.
+ */
+export function lineTotalCentavos(qty: number, unitPriceCentavos: number): number {
+  if (!Number.isFinite(qty) || qty < 0) throw new Error("qty must be >= 0");
+  if (!Number.isInteger(unitPriceCentavos) || unitPriceCentavos < 0)
+    throw new Error("unit_price_centavos must be a non-negative integer");
+  return Math.round(qty * unitPriceCentavos);
+}
+
+/** Sum centavo values. Returns 0 for an empty list. */
+export function sumCentavos(values: number[]): number {
+  return values.reduce((a, b) => a + b, 0);
+}

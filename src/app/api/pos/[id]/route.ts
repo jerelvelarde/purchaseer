@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { UpdatePOInput } from "@/lib/po/types";
 import { canEdit } from "@/lib/po/state-machine";
-import { lineTotalCentavos, sumCentavos } from "@/lib/po/money";
+import { lineTotalCentavos, sumCentavos } from "@/lib/money";
 
 export async function GET(
   _req: Request,

@@ -1,7 +1,8 @@
 "use client";
 
 import { usePolling } from "@/lib/use-polling";
-import { centavosToPeso, computePercentUsed } from "@/lib/dashboard/money";
+import { formatPeso } from "@/lib/money";
+import { computePercentUsed } from "@/lib/dashboard/percent";
 import type { PoRow, ProjectRow } from "@/lib/dashboard/queries";
 
 type ProjectPayload = { project: ProjectRow; pos: PoRow[] };
@@ -38,11 +39,11 @@ export function ProjectDashboardClient({ projectId }: { projectId: string }) {
         <dl className="mt-3 grid grid-cols-2 gap-y-1 text-sm sm:grid-cols-4">
           <dt className="text-slate-500">Budget</dt>
           <dd className="text-slate-900 sm:text-right">
-            {centavosToPeso(project.budget_centavos)}
+            {formatPeso(project.budget_centavos)}
           </dd>
           <dt className="text-slate-500">Spend</dt>
           <dd className="text-slate-900 sm:text-right">
-            {centavosToPeso(project.spend_centavos)}
+            {formatPeso(project.spend_centavos)}
           </dd>
           <dt className="text-slate-500">% used</dt>
           <dd className={`sm:text-right font-medium ${over ? "text-red-600" : "text-slate-900"}`}>
@@ -72,7 +73,7 @@ export function ProjectDashboardClient({ projectId }: { projectId: string }) {
                   <p className="truncate text-slate-500">{po.supplier_name}</p>
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
-                  <span className="text-slate-900">{centavosToPeso(po.total_centavos)}</span>
+                  <span className="text-slate-900">{formatPeso(po.total_centavos)}</span>
                   <StatusPill status={po.status} />
                 </div>
               </li>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { lineTotalCentavos, sumCentavos, centavosToPeso } from "@/lib/po/money";
+import { lineTotalCentavos, sumCentavos, formatPeso } from "@/lib/money";
 
 describe("PO money helpers", () => {
   it("lineTotalCentavos multiplies and rounds", () => {
@@ -25,10 +25,12 @@ describe("PO money helpers", () => {
     expect(sumCentavos([100, 200, 50])).toBe(350);
   });
 
-  it("centavosToPeso formats", () => {
-    expect(centavosToPeso(0)).toBe("₱0.00");
-    expect(centavosToPeso(150)).toBe("₱1.50");
-    expect(centavosToPeso(123456)).toBe("₱1,234.56");
-    expect(centavosToPeso(-150)).toBe("-₱1.50");
+  it("formatPeso formats numbers and bigints", () => {
+    expect(formatPeso(0)).toBe("₱0.00");
+    expect(formatPeso(150)).toBe("₱1.50");
+    expect(formatPeso(123456)).toBe("₱1,234.56");
+    expect(formatPeso(-150)).toBe("-₱1.50");
+    expect(formatPeso(150n)).toBe("₱1.50");
+    expect(formatPeso(null)).toBe("₱0.00");
   });
 });

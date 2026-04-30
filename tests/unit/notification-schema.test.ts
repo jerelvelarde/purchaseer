@@ -3,7 +3,7 @@ import {
   notificationKindSchema,
   notificationPayloadSchema,
 } from "@/lib/notifications/schema";
-import { transitionApproval } from "@/lib/po/approval-machine";
+import { transitionApproval } from "@/lib/po/state-machine";
 
 const UUID = "00000000-0000-4000-8000-000000000000";
 
